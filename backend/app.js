@@ -1,12 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-//require('dotenv').config();
+require('dotenv').config();
+
+
+const app = express(); 
 
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
 const { dirname } = require('path');
-const user = require('./models/user');
 
 mongoose.connect('mongodb+srv://hind1999:Biba34@cluster0.hwwgftl.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -15,7 +17,11 @@ mongoose.connect('mongodb+srv://hind1999:Biba34@cluster0.hwwgftl.mongodb.net/?re
   .catch(() => console.log('Connexion à MongoDB échouée !')
 );
 
-const app = express();
+const User = require('./models/user');
+
+app.use(express.json());
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,18 +32,30 @@ app.use((req, res, next) => {
 
 //---intercepte toutes les requêtes qui contiennent du JSON pour le mettre à disposition sur l'objet requête dans req.body
 // remplace body parser
-app.use(express.json());
+
 
 app.post("/api/auth/signup", (req, res) => {
   console.log("Signup request", req.body)
-  user
-    .save()
-    .then((res) => {res.send({message: "Utilisateur enregistré!"})
+  const user = new User({
+    ...req.body
+  });
+  user.save()
+  .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
+    /*.then((res) => {res.send({message: "Utilisateur enregistré!"})
     })
-    .catch((err) => console.log("User pas enregistré", err))
-})
+    .catch((err) => console.log("User pas enregistré", err))*/
+});
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+//app.get();
+
+/*app.get('/api/sauce', (req, res, next) => {
+  Sauce.find()
+    .then(sauces => res.status(200).json(sauces))
+    .catch(error => res.status(400).json({ error }));
+});*/
+
+
 app.use('/api/sauces', saucesRoutes);
 app.use('/api/auth', userRoutes);
 
