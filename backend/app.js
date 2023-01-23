@@ -30,30 +30,6 @@ app.use((req, res, next) => {
     next();
 });
 
-//---intercepte toutes les requêtes qui contiennent du JSON pour le mettre à disposition sur l'objet requête dans req.body
-// remplace body parser
-
-
-app.post("/api/auth/signup", (req, res) => {
-  console.log("Signup request", req.body)
-  const user = new User({
-    ...req.body
-  });
-  user.save()
-  .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-    .catch(error => res.status(400).json({ error }));
-    /*.then((res) => {res.send({message: "Utilisateur enregistré!"})
-    })
-    .catch((err) => console.log("User pas enregistré", err))*/
-});
-
-//app.get();
-
-/*app.get('/api/sauce', (req, res, next) => {
-  Sauce.find()
-    .then(sauces => res.status(200).json(sauces))
-    .catch(error => res.status(400).json({ error }));
-});*/
 
 
 app.use('/api/sauces', saucesRoutes);
