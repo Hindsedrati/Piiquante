@@ -5,14 +5,14 @@ var passwordValidator = require('password-validator');
 // Création du schéma
 var schemaPassword = new passwordValidator();
 
-// shéma 
+// schéma 
 schemaPassword
 .is().min(4)                                    // nombre de caractere minimum
 .is().max(100)                                  // nombre de caractere maximum
 .has().uppercase()                              // majuscules obligatoire
 .has().lowercase()                              // minuscules obligatoire
 .has().digits(2)                                // minimum 2 chiffres
-.has().not().spaces()                           // espaces interdits
+.has().not().spaces()                           // interdiction d'espace
 .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist de mot de passe
 
 module.exports = (req, res, next) => {
