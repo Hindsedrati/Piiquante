@@ -11,6 +11,7 @@ exports.signup = (req, res, next) => {
 
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
+          console.log(hash)
             const user = new User ({
                 email: req.body.email,
                 password: hash
@@ -30,8 +31,10 @@ exports.login = (req, res, next) => {
             if (!user){
                 return res.status(401).json({ error: 'utilisateur non trouvé !' });
             }
+            console.log(req.body.password, user.password)
             bcrypt.compare(req.body.password, user.password)
-                .then(valid => {
+                .then((valid) => {
+                  console.log(valid)
                     if (!valid) {
                         return res.status(401).json({ error: 'mot de passe incorrect !' });
                     }
@@ -39,7 +42,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            process.env.RANDOM_SECRET_KEY,
+                            'RANDOM_SECRET_KEY',
                             { expiresIn: '24h' }
                         )
                     });
