@@ -1,4 +1,5 @@
 // importation bcrypt pour le hash du mot de passe
+const validator = require('validator');
 const bcrypt = require('bcrypt');
 //le module'bcrypt' pour hasher les mots de passe lors de la création de 
 //compte et pour comparer les mots de passe lors de la connexion
@@ -6,7 +7,7 @@ const jwt = require('jsonwebtoken');
 //le module 'jsonwebtoken' pour créer un jeton d'authentification valide pour 
 //l'utilisateur qui se connecte avec succès
 require('dotenv').config();
-
+const cryptojs = require('crypto-js');
 // importation du models
 const User = require('../models/user');
 
@@ -15,22 +16,26 @@ exports.signup = (req, res, next) => {
 
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
-            console.log(hash)
-            const user = new User ({
-                email: req.body.email,
-                password: hash
-            })
-            user.save()
-                .then(() => res.status(201).json({message: 'utilisateur créé !' }))
-                .catch(error => res.status(400).json({ error }));
+            if(validator.isEmail(req.body.email)){
+                const user = new User ({
+                    email: cryptojs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString(),
+                    password: hash
+                })
+                user.save()
+                    .then(() => res.status(201).json({message: 'utilisateur créé !' }))
+                    .catch(error => res.status(400).json({ error }));
+            
+            }else{
+                return res.status(400).json({error: 'Adresse e-mail invalide'});
+            }
         })
         .catch(error => res.status(500).json({ error }));
 };
 
 // login pour accéder en tant qu'utilisateur existant
 exports.login = (req, res, next) => {
-
-    User.findOne({ email: req.body.email })
+    const cryptedResearchedEmail = cryptojs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString();
+    User.findOne({ email: cryptedResearchedEmail})
         .then(user => {
             if (!user){
                 return res.status(401).json({ error: 'utilisateur non trouvé !' });
@@ -38,7 +43,6 @@ exports.login = (req, res, next) => {
             
             bcrypt.compare(req.body.password, user.password)
                 .then((valid) => {
-                console.log(valid)
                     if (!valid) {
                         return res.status(401).json({ error: 'mot de passe incorrect !' });
                     }
@@ -55,3 +59,4 @@ exports.login = (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error }));
 };
+
