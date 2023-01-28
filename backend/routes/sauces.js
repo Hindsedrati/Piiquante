@@ -18,3 +18,4 @@ router.get('/:id', auth, saucesCtrl.getOneSauce);
 router.get('/', auth, saucesCtrl.getAllSauces);
 
 module.exports = router;
+ 
