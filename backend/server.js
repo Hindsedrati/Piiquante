@@ -1,4 +1,3 @@
-
 // utilisation des modules "http" et "app" pour créer un serveur qui utilise l'application 
 //définie dans notre "app.js"
 const http = require('http');
@@ -21,7 +20,8 @@ const normalizePort = val => {
 const port = normalizePort(process.env.PORT || '3000'); 
 app.set('port', port);
 
-//errorHandler: gestionnaire d'erreur est utilisé pour gérer les erreurs qui peuvent survenir lors de la création et de l'écoute du serveur
+//errorHandler: gestionnaire d'erreur est utilisé pour gérer les erreurs qui peuvent survenir
+//lors de la création et de l'écoute du serveur
 const errorHandler = error => {
   if (error.syscall !== 'listen') {
     throw error;
@@ -50,7 +50,6 @@ server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();
   const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
-  console.log('Listening on ' + bind);
 });
 
 server.listen(port);
