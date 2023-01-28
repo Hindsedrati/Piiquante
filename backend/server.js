@@ -1,9 +1,14 @@
+
+// utilisation des modules "http" et "app" pour créer un serveur qui utilise l'application 
+//définie dans notre "app.js"
 const http = require('http');
 const app = require('./app');
 
+
+//normalizePort() est utilisée pour obtenir un nombre  de port à utiliser pour le serveur
 const normalizePort = val => {
   const port = parseInt(val, 10);
-
+  
   if (isNaN(port)) {
     return val;
   }
@@ -12,9 +17,11 @@ const normalizePort = val => {
   }
   return false;
 };
-const port = normalizePort(process.env.PORT || '3000'); /* si l'environnement du server nous envoi un port à utiliser par defaut OU port 3000 */
+//"port" est définie en utilisant soit le port d'environnement spécifié, soit le port 3000 par défaut
+const port = normalizePort(process.env.PORT || '3000'); 
 app.set('port', port);
 
+//errorHandler: gestionnaire d'erreur est utilisé pour gérer les erreurs qui peuvent survenir lors de la création et de l'écoute du serveur
 const errorHandler = error => {
   if (error.syscall !== 'listen') {
     throw error;
@@ -35,6 +42,8 @@ const errorHandler = error => {
   }
 };
 
+
+// le serveur écoute sur le port spécifié et imprime un message indiquant qu'il écoute sur ce port
 const server = http.createServer(app);
 
 server.on('error', errorHandler);
@@ -45,3 +54,5 @@ server.on('listening', () => {
 });
 
 server.listen(port);
+
+
